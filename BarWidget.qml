@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell.Io
 import qs.Commons
 import qs.Ui
@@ -41,6 +42,15 @@ BarWidget {
     browser.command = ["xdg-open", url];
     browser.running = true;
     close();
+  }
+
+  function saveServerUrl(base) {
+    if (!bar || !bar.shell || !bar.shell.updateEntryInline) return false;
+    var next = {};
+    var current = settings || {};
+    for (var key in current) next[key] = current[key];
+    next.serverUrl = base;
+    return bar.shell.updateEntryInline(moduleName, next);
   }
 
   function injectPanel() {
@@ -140,15 +150,82 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: root.vertical
-      ? (root.status === "ready" ? String(root.dueQuestions) : "—")
-      : (root.status === "ready" ? "DLMS · " + root.dueQuestions
-        : root.status === "loading" ? "DLMS · …"
-        : root.status === "unconfigured" ? "DLMS · setup"
-        : root.status === "stale" ? "DLMS · unavailable" : "DLMS · offline")
+    text: ""
+    labelVisible: false
+    hasVisualContent: true
+    fixedWidth: root.vertical ? -1 : labelRow.implicitWidth + scaledHorizontalMargin * 2
+    fixedHeight: root.vertical ? labelColumn.implicitHeight + scaledVerticalPadding * 2 : -1
     tooltipText: root.status === "ready"
-      ? root.dueQuestions + " questions due"
-      : root.status === "unconfigured" ? "Set the DLMS server URL" : "DLMS " + root.status
+      ? "DLMS: " + root.dueQuestions + " questions due"
+      : root.status === "unconfigured" ? "Set the DLMS URL" : "DLMS " + root.status
+    readonly property string countLabel: root.status === "ready" ? String(root.dueQuestions)
+      : root.status === "loading" ? "…"
+      : root.status === "unconfigured" ? "setup" : "—"
+
+    Row {
+      id: labelRow
+      visible: !root.vertical
+      anchors.centerIn: parent
+      spacing: Style.space(4)
+      Item {
+        width: Style.space(16)
+        height: Style.space(16)
+        Image {
+          id: horizontalIcon
+          anchors.fill: parent
+          source: Qt.resolvedUrl("dlms-mark.svg")
+          sourceSize: Qt.size(width * 2, height * 2)
+          visible: false
+          layer.enabled: true
+        }
+        MultiEffect {
+          anchors.fill: horizontalIcon
+          source: horizontalIcon
+          colorization: 1
+          colorizationColor: button.foreground
+        }
+      }
+      Text {
+        text: "· " + button.countLabel
+        textFormat: Text.PlainText
+        color: button.foreground
+        font.family: button.fontFamily
+        font.pixelSize: button.fontSize
+      }
+    }
+    Column {
+      id: labelColumn
+      visible: root.vertical
+      anchors.centerIn: parent
+      spacing: Style.space(2)
+      Item {
+        width: Style.space(16)
+        height: Style.space(16)
+        anchors.horizontalCenter: parent.horizontalCenter
+        Image {
+          id: verticalIcon
+          anchors.fill: parent
+          source: Qt.resolvedUrl("dlms-mark.svg")
+          sourceSize: Qt.size(width * 2, height * 2)
+          visible: false
+          layer.enabled: true
+        }
+        MultiEffect {
+          anchors.fill: verticalIcon
+          source: verticalIcon
+          colorization: 1
+          colorizationColor: button.foreground
+        }
+      }
+      Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: button.countLabel
+        textFormat: Text.PlainText
+        color: button.foreground
+        font.family: button.fontFamily
+        font.pixelSize: button.fontSize
+      }
+    }
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.LeftButton) root.togglePanel();
     }

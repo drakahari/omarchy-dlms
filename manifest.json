@@ -23,7 +23,7 @@
       {
         "key": "serverUrl",
         "type": "string",
-        "label": "DLMS server URL"
+        "label": "DLMS URL"
       }
     ]
   }
