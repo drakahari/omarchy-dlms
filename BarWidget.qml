@@ -211,6 +211,7 @@ BarWidget {
       Text {
         anchors.horizontalCenter: parent.horizontalCenter
         text: button.countLabel
+        visible: button.countLabel.length <= 2
         textFormat: Text.PlainText
         color: button.foreground
         font.family: button.fontFamily

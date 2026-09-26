@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
   "id": "drakahari.dlms",
-  "name": "DLMS",
+  "name": "DLMS Companion",
   "version": "0.1.0",
   "author": "drakahari",
   "license": "MIT",
-  "description": "Review status and browser shortcuts for an existing DLMS server",
+  "description": "Companion for the DLMS study app: shows due questions from a reachable local or remote instance in the Omarchy bar.",
   "kinds": ["bar-widget"],
   "entryPoints": {
     "barWidget": "BarWidget.qml"
   },
   "barWidget": {
-    "displayName": "DLMS",
-    "description": "Due questions from your DLMS server",
+    "displayName": "DLMS Companion",
+    "description": "Due questions and review shortcuts for an existing DLMS instance",
     "category": "Info",
     "allowMultiple": false,
     "defaultSection": "right",

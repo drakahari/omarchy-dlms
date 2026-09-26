@@ -1,64 +1,68 @@
-# omarchy-dlms
+# DLMS Companion for Omarchy
 
-**Early local prototype.** A small Omarchy Quattro bar widget for an existing DLMS server. It shows the server's due-question count, up to two titles from Today's Review, and links that open DLMS in your browser. DLMS continues to own all study and quiz behavior.
+A small Omarchy Quattro bar widget for an existing DLMS instance. It shows the number of study questions due and opens Today's Review or DLMS in your browser. DLMS remains responsible for review scheduling and study activity. This plugin is not yet listed in the Omarchy Plugins marketplace.
 
-The icon, count, panel, URL configuration, and appearance toggle have been live-tested on Omarchy Quattro. The new theme-aware monochrome rendering still needs a live test. This plugin is not available in a plugin marketplace.
+## What is DLMS?
+
+[DLMS](https://github.com/drakahari/DLMS_next) is a local-first study application for creating quizzes, reviewing material, and tracking learning progress through a browser interface. This companion does not include DLMS; you need a running instance reachable from your Omarchy desktop.
 
 ## Requirements
 
-- Omarchy Quattro with its Quickshell plugin system and built-in bar
-- An existing DLMS server reachable from this desktop
-- `curl` and `xdg-open` on the desktop (standard Omarchy tools)
+- Omarchy Quattro with the built-in bar
+- A reachable local or remote DLMS instance
+- `curl` and `xdg-open` on the Omarchy desktop
 
-## Local development install
+## Install
 
-From this checkout on an Omarchy machine:
-
-```sh
-omarchy plugin validate "$PWD"
-qmllint -I "$OMARCHY_PATH/shell" BarWidget.qml Panel.qml
-mkdir -p "$HOME/.config/omarchy/plugins"
-ln -s "$PWD" "$HOME/.config/omarchy/plugins/drakahari.dlms"
-omarchy-shell shell rescanPlugins
-omarchy plugin enable drakahari.dlms --section right
-```
-
-The symlink is for local development only. Check that the destination does not already exist before creating it. Click the bar widget, open **Settings**, enter the **DLMS URL**, and select **Save**. The URL is stored as the widget's inline `serverUrl` setting in Omarchy's `shell.json`; there is no separate plugin config file. The same HTTP/HTTPS setting works for a local server (`http://127.0.0.1:9001`) or a remote server (`http://dlms-server:9001`, `https://dlms.example.com`). A trailing slash is fine. Set the server **origin**, without a page path. No server address is included in this repository.
-
-After updating a development install, confirm that `~/.config/omarchy/plugins/drakahari.dlms` points to this checkout and restart the shell with `omarchy-restart-shell`. If the bar still shows the old literal `DLMS · setup`, the shell is running an older widget copy: this version has no such bar text.
-
-**Test Connection** checks the typed URL against DLMS's existing `GET /api/daily-review-plan` endpoint before saving. It only reads the endpoint and reports success or failure. For advanced setup or recovery, the terminal command remains available:
+Install from this public repository, then enable the widget. It starts in the right section of the bar.
 
 ```sh
-omarchy bar set drakahari.dlms serverUrl "http://YOUR-DLMS-SERVER:9001"
+omarchy plugin add https://github.com/drakahari/omarchy-dlms.git
+omarchy plugin enable drakahari.dlms
 ```
+
+Click the DLMS icon in the bar. If no URL is configured, the panel opens Settings directly. Enter the **DLMS URL**, optionally select **Test Connection**, then select **Save**. Use the server's base URL, without a page path:
+
+- Local: `http://127.0.0.1:9001`
+- Remote: `http://dlms-server:9001`
+- HTTPS: `https://dlms.example.com`
+
+A trailing slash is accepted. The URL and appearance preference are stored in Omarchy's inline bar-widget settings, with no separate plugin config file. For troubleshooting, you can also set the URL with `omarchy bar set drakahari.dlms serverUrl "http://dlms-server:9001"`.
 
 ## Use
 
-The bar shows a theme-aware monochrome version of the DLMS app icon and the current due count. Hover for a textual DLMS label. Click it to see the count, up to two recommendation titles, **Open Today's Review**, **Open DLMS**, and **Settings**. When no valid URL is configured, clicking opens the settings field directly. Under **Appearance**, enable **Use color DLMS icon** to switch to the full-color app icon. The choice is saved in the same inline Omarchy widget entry as `serverUrl` and updates the bar immediately. The links open the browser; they do not create quizzes or submit answers. The main panel supports Up/Down and Enter, plus Escape to close.
+The bar shows a theme-colored DLMS icon and the due count. Hover for a textual label; click to see the compact panel and its **Open Today's Review**, **Open DLMS**, and **Settings** actions. Under **Appearance**, enable **Use color DLMS icon** to use the original full-color favicon instead. The setting updates the bar and persists across shell restarts.
 
-The bundled `dlms-icon.png` is a 64 px copy scaled from DLMS's existing `static/favicon.ico` PNG artwork. The monochrome icon is a vector silhouette derived from those favicon pixels, preserving the circular badge, DLMS lettering, and lower swoosh. QML fills it with the current bar foreground color; the original PNG remains the color option. The one-color version omits the favicon's gradients and dark background. Neither mode depends on the DLMS checkout at runtime.
+The widget reads DLMS's `GET /api/daily-review-plan` endpoint on startup, when the panel opens, and every ten minutes. An unreachable or invalid response shows an unavailable state, never an old count as current. **Test Connection** checks the URL typed into Settings without saving it or changing DLMS data.
 
-The widget checks `GET /api/daily-review-plan` on start and every ten minutes. Opening the panel requests a fresh response. During a check, it shows a checking state; a failed, malformed, or unreachable response shows an unavailable state rather than an old count. If a response ages past ten minutes (for example, after sleep), the count is hidden. An unset or invalid server URL shows a setup state.
+Drag the widget to another bar section, or use `omarchy bar move drakahari.dlms --section center` (replace `center` with `left` or `right`). The manifest's right-side placement is only the default.
 
-## Removal
+## Update and remove
+
+For a copy installed from Git:
 
 ```sh
-omarchy plugin disable drakahari.dlms
+omarchy plugin update drakahari.dlms
+```
+
+If the old QML remains visible after updating, run `omarchy-restart-shell`. For a local development symlink, update its source checkout and restart the shell if needed.
+
+To disable the widget without deleting it, run `omarchy plugin disable drakahari.dlms`. To remove an installed copy, run:
+
+```sh
 omarchy plugin remove drakahari.dlms
 ```
 
-For the local symlink installation above, removal should unlink the installed plugin reference. The checkout remains separate.
+Omarchy removes the bar entry; manual `shell.json` editing is not needed.
 
 ## Privacy and security
 
-The plugin contacts only the configured DLMS server and opens its pages through the desktop's browser handler. It stores no credentials or learning history. The server URL is stored in the user's Omarchy bar configuration. DLMS LAN mode itself has no built-in authentication or TLS; use a trusted, appropriately protected network. Avoid putting credentials in the URL.
+The plugin connects only to the DLMS URL you configure and retrieves review information from that instance, whether local or remote. It does not store credentials or learning history. Use a network or connection appropriate for your DLMS deployment; this plugin does not add authentication or TLS to DLMS itself.
 
 ## Current limits
 
-- It reads only the server's Today’s Review plan. Browser-local Resume sessions are absent.
-- It shows recommendation titles only, without reproducing DLMS's decision or action controls.
-- It has no notifications, offline cache, or quiz controls.
-- The theme-aware monochrome icon needs validation on an Omarchy installation before release.
+- Review actions open DLMS in your browser; the panel does not answer quizzes.
+- The panel shows up to two recommendation titles from DLMS and does not reproduce DLMS's review logic.
+- No notifications or offline cache.
 
-The implementation follows the current [Omarchy plugin contract](https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md) and its [first-party popup widget pattern](https://github.com/omacom/omarchy/blob/quattro/shell/plugins/panels/clock/BarWidget.qml).
+The bundled color icon comes from DLMS's `static/favicon.ico` artwork. The theme-aware monochrome icon is a one-color vector derived from the same favicon's badge, DLMS lettering, and swoosh. Neither icon needs the DLMS repository at runtime.
