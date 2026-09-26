@@ -186,6 +186,7 @@ BarWidget {
         width: Style.space(18)
         height: Style.space(18)
         useColorIcon: root.useColorIcon
+        foreground: button.foreground
       }
       Text {
         text: "· " + button.countLabel
@@ -205,6 +206,7 @@ BarWidget {
         height: Style.space(18)
         anchors.horizontalCenter: parent.horizontalCenter
         useColorIcon: root.useColorIcon
+        foreground: button.foreground
       }
       Text {
         anchors.horizontalCenter: parent.horizontalCenter
