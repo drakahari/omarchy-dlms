@@ -2,7 +2,7 @@
 
 **Early local prototype.** A small Omarchy Quattro bar widget for an existing DLMS server. It shows the server's due-question count, up to two titles from Today's Review, and links that open DLMS in your browser. DLMS continues to own all study and quiz behavior.
 
-The initial count, panel, links, and remote polling were live-tested on Omarchy Quattro. A later icon/settings version exposed runtime regressions; the fixes in this checkout still need a live test. This plugin is not available in a plugin marketplace.
+The icon, count, panel, and in-panel URL configuration have been live-tested on Omarchy Quattro. The appearance toggle added afterward still needs a live test. This plugin is not available in a plugin marketplace.
 
 ## Requirements
 
@@ -35,9 +35,9 @@ omarchy bar set drakahari.dlms serverUrl "http://YOUR-DLMS-SERVER:9001"
 
 ## Use
 
-The bar shows the DLMS app icon and current due count. Hover for a textual DLMS label. Click it to see the count, up to two recommendation titles, **Open Today's Review**, **Open DLMS**, and **Settings**. When no valid URL is configured, clicking opens the settings field directly. The links open the browser; they do not create quizzes or submit answers. The main panel supports Up/Down and Enter, plus Escape to close.
+The bar shows a theme-colored DLMS shield/check icon and current due count. Hover for a textual DLMS label. Click it to see the count, up to two recommendation titles, **Open Today's Review**, **Open DLMS**, and **Settings**. When no valid URL is configured, clicking opens the settings field directly. Under **Appearance**, enable **Use color DLMS icon** to switch to the full-color app icon. The choice is saved in the same inline Omarchy widget entry as `serverUrl` and updates the bar immediately. The links open the browser; they do not create quizzes or submit answers. The main panel supports Up/Down and Enter, plus Escape to close.
 
-The bundled `dlms-icon.png` is a 64 px copy scaled from DLMS's existing `static/favicon.ico` PNG artwork. It does not depend on the DLMS checkout at runtime.
+The bundled `dlms-icon.png` is a 64 px copy scaled from DLMS's existing `static/favicon.ico` PNG artwork. The monochrome shape uses the shield/check paths from DLMS's `templates/dashboard/index.html` and follows the bar foreground color. Neither icon depends on the DLMS checkout at runtime.
 
 The widget checks `GET /api/daily-review-plan` on start and every ten minutes. Opening the panel requests a fresh response. During a check, it shows a checking state; a failed, malformed, or unreachable response shows an unavailable state rather than an old count. If a response ages past ten minutes (for example, after sleep), the count is hidden. An unset or invalid server URL shows a setup state.
 
@@ -59,6 +59,6 @@ The plugin contacts only the configured DLMS server and opens its pages through 
 - It reads only the server's Today’s Review plan. Browser-local Resume sessions are absent.
 - It shows recommendation titles only, without reproducing DLMS's decision or action controls.
 - It has no notifications, offline cache, or quiz controls.
-- The current icon and in-panel settings fixes need validation on an Omarchy installation before release.
+- The appearance toggle needs validation on an Omarchy installation before release.
 
 The implementation follows the current [Omarchy plugin contract](https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md) and its [first-party popup widget pattern](https://github.com/omacom/omarchy/blob/quattro/shell/plugins/panels/clock/BarWidget.qml).

@@ -17,13 +17,20 @@
     "allowMultiple": false,
     "defaultSection": "right",
     "defaults": {
-      "serverUrl": ""
+      "serverUrl": "",
+      "useColorIcon": false
     },
     "schema": [
       {
         "key": "serverUrl",
         "type": "string",
         "label": "DLMS URL"
+      },
+      {
+        "key": "useColorIcon",
+        "type": "boolean",
+        "label": "Use color DLMS icon",
+        "defaultValue": false
       }
     ]
   }

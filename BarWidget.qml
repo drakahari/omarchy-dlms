@@ -9,6 +9,7 @@ BarWidget {
   moduleName: "drakahari.dlms"
 
   readonly property string serverBase: Model.baseUrl(setting("serverUrl", ""))
+  readonly property bool useColorIcon: setting("useColorIcon", false) === true
   property string status: "unconfigured" // unconfigured, loading, ready, offline, stale
   property int dueQuestions: 0
   property var recommendations: []
@@ -51,6 +52,21 @@ BarWidget {
     for (var key in current) next[key] = current[key];
     next.serverUrl = base;
     return bar.shell.updateEntryInline(moduleName, next);
+  }
+
+  function saveColorIcon(enabled) {
+    if (useColorIcon === enabled) return true;
+    if (!bar || !bar.shell || !bar.shell.updateEntryInline) return false;
+    var next = {};
+    var current = settings || {};
+    for (var key in current) next[key] = current[key];
+    next.useColorIcon = enabled;
+    settings = next;
+    if (!bar.shell.updateEntryInline(moduleName, next)) {
+      settings = current;
+      return false;
+    }
+    return true;
   }
 
   function injectPanel() {
@@ -166,15 +182,11 @@ BarWidget {
       visible: !root.vertical
       anchors.centerIn: parent
       spacing: Style.space(4)
-      Item {
+      DlmsIcon {
         width: Style.space(18)
         height: Style.space(18)
-        Image {
-          anchors.fill: parent
-          source: Qt.resolvedUrl("dlms-icon.png")
-          fillMode: Image.PreserveAspectFit
-          smooth: true
-        }
+        useColorIcon: root.useColorIcon
+        foreground: button.foreground
       }
       Text {
         text: "· " + button.countLabel
@@ -189,16 +201,12 @@ BarWidget {
       visible: root.vertical
       anchors.centerIn: parent
       spacing: Style.space(2)
-      Item {
+      DlmsIcon {
         width: Style.space(18)
         height: Style.space(18)
         anchors.horizontalCenter: parent.horizontalCenter
-        Image {
-          anchors.fill: parent
-          source: Qt.resolvedUrl("dlms-icon.png")
-          fillMode: Image.PreserveAspectFit
-          smooth: true
-        }
+        useColorIcon: root.useColorIcon
+        foreground: button.foreground
       }
       Text {
         anchors.horizontalCenter: parent.horizontalCenter

@@ -56,6 +56,12 @@ Panel {
     settingsFeedback = "Saved.";
     Qt.callLater(function() { if (root.hostWidget) root.hostWidget.refresh(); });
   }
+  function setColorIcon(enabled) {
+    if (!hostWidget || !hostWidget.saveColorIcon(enabled))
+      settingsFeedback = "Could not save the icon preference.";
+    else
+      settingsFeedback = "";
+  }
 
   Process {
     id: testRequest
@@ -167,6 +173,21 @@ Panel {
                 }
               }
             }
+          }
+          Text {
+            text: "Appearance"
+            textFormat: Text.PlainText
+            color: root.foreground
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+          }
+          Toggle {
+            width: parent.width
+            label: "Use color DLMS icon"
+            checked: !!root.hostWidget && root.hostWidget.useColorIcon
+            foreground: root.foreground
+            titleSize: Style.font.body
+            onClicked: root.setColorIcon(!checked)
           }
           Text {
             width: parent.width
