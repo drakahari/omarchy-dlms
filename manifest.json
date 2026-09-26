@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "drakahari.dlms",
+  "name": "DLMS",
+  "version": "0.1.0",
+  "author": "drakahari",
+  "license": "MIT",
+  "description": "Review status and browser shortcuts for an existing DLMS server",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "DLMS",
+    "description": "Due questions from your DLMS server",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "serverUrl": ""
+    },
+    "schema": [
+      {
+        "key": "serverUrl",
+        "type": "string",
+        "label": "DLMS server URL"
+      }
+    ]
+  }
+}
