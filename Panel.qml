@@ -40,7 +40,7 @@ Panel {
     if (testRequest.running) return;
     settingsFeedback = "Testing…";
     testUrl = base;
-    testRequest.command = ["curl", "--fail", "--silent", "--max-time", "5",
+    testRequest.command = ["curl", "-q", "--fail", "--silent", "--max-time", "5",
       "--max-filesize", "1048576", "--proto", "=http,https",
       base + "/api/daily-review-plan"];
     testRequest.running = true;
@@ -65,17 +65,23 @@ Panel {
 
   Process {
     id: testRequest
-    stdout: StdioCollector {
-      waitForEnd: true
-      onStreamFinished: {
-        if (root.testUrl !== Model.baseUrl(urlField.text)) return;
+    onExited: function(exitCode) {
+      if (root.testUrl !== Model.baseUrl(urlField.text)) return;
+      var valid = false;
+      if (exitCode === 0) {
         try {
-          Model.reviewPlan(String(text || ""));
-          root.settingsFeedback = "Connection successful.";
+          Model.reviewPlan(String(testResponse.text || ""));
+          valid = true;
         } catch (error) {
-          root.settingsFeedback = "DLMS unavailable or invalid response.";
+          valid = false;
         }
       }
+      root.settingsFeedback = valid ? "Connection successful."
+        : "DLMS unavailable or invalid response.";
+    }
+    stdout: StdioCollector {
+      id: testResponse
+      waitForEnd: true
     }
   }
 

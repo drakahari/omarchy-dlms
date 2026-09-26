@@ -30,7 +30,7 @@ BarWidget {
     }
     status = "loading";
     requestBase = serverBase;
-    request.command = ["curl", "--fail", "--silent", "--show-error", "--max-time", "5",
+    request.command = ["curl", "-q", "--fail", "--silent", "--show-error", "--max-time", "5",
       "--max-filesize", "1048576", "--proto", "=http,https",
       requestBase + "/api/daily-review-plan"];
     request.running = true;
@@ -124,28 +124,34 @@ BarWidget {
 
   Process {
     id: request
-    onExited: {
-      if (root.requestBase !== root.serverBase) Qt.callLater(root.refresh);
-    }
-    stdout: StdioCollector {
-      waitForEnd: true
-      onStreamFinished: {
-        if (root.requestBase !== root.serverBase) {
-          Qt.callLater(root.refresh);
-          return;
-        }
+    onExited: function(exitCode) {
+      if (root.requestBase !== root.serverBase) {
+        Qt.callLater(root.refresh);
+        return;
+      }
+      var result = null;
+      if (exitCode === 0) {
         try {
-          var result = Model.reviewPlan(String(text || ""));
-          root.dueQuestions = result.due;
-          root.recommendations = result.recommendations;
-          root.lastSuccessAt = Date.now();
-          root.status = "ready";
+          result = Model.reviewPlan(String(response.text || ""));
         } catch (error) {
-          root.dueQuestions = 0;
-          root.recommendations = [];
-          root.status = "offline";
+          result = null;
         }
       }
+      if (result) {
+        root.dueQuestions = result.due;
+        root.recommendations = result.recommendations;
+        root.lastSuccessAt = Date.now();
+        root.status = "ready";
+        return;
+      }
+      root.dueQuestions = 0;
+      root.recommendations = [];
+      root.lastSuccessAt = 0;
+      root.status = "offline";
+    }
+    stdout: StdioCollector {
+      id: response
+      waitForEnd: true
     }
   }
 
