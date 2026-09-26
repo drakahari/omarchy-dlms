@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import qs.Commons
 
 Item {
   id: root
@@ -14,27 +15,43 @@ Item {
     smooth: true
   }
 
-  // Paths from the DLMS dashboard brand mark in templates/dashboard/index.html.
-  Shape {
-    width: 24
-    height: 24
-    anchors.centerIn: parent
-    scale: root.width / 20
+  // Favicon badge silhouette and swoosh; the tiny wordmark is reduced to D.
+  Item {
+    anchors.fill: parent
     visible: !root.useColorIcon
 
-    ShapePath {
-      strokeColor: root.foreground
-      strokeWidth: 1.7
-      fillColor: "transparent"
-      PathSvg { path: "M4 5.5 12 3l8 2.5v5.7c0 4.9-3.3 8.1-8 9.8-4.7-1.7-8-4.9-8-9.8V5.5Z" }
+    Rectangle {
+      anchors.fill: parent
+      anchors.margins: root.width / 12
+      radius: width / 2
+      color: "transparent"
+      border.color: root.foreground
+      border.width: Math.max(1, root.width / 14)
     }
-    ShapePath {
-      strokeColor: root.foreground
-      strokeWidth: 1.7
-      fillColor: "transparent"
-      capStyle: ShapePath.RoundCap
-      joinStyle: ShapePath.RoundJoin
-      PathSvg { path: "m8 12 2.3-2.4 2.1 2.1L16 8" }
+    Text {
+      anchors.centerIn: parent
+      anchors.verticalCenterOffset: -root.height / 18
+      text: "D"
+      textFormat: Text.PlainText
+      color: root.foreground
+      font.family: Style.font.family
+      font.pixelSize: root.height * 0.55
+      font.bold: true
+      font.italic: true
+      renderType: Text.NativeRendering
+    }
+    Shape {
+      width: 18
+      height: 18
+      anchors.centerIn: parent
+      scale: root.width / 18
+      ShapePath {
+        strokeColor: root.foreground
+        strokeWidth: 0.8
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        PathSvg { path: "M3.5 13.1 C7 11.8 11 12.5 14.7 10.9" }
+      }
     }
   }
 }
