@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 import Quickshell.Io
 import qs.Commons
 import qs.Ui
@@ -45,6 +44,7 @@ BarWidget {
   }
 
   function saveServerUrl(base) {
+    if (serverBase === base) return true;
     if (!bar || !bar.shell || !bar.shell.updateEntryInline) return false;
     var next = {};
     var current = settings || {};
@@ -150,9 +150,8 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: ""
+    text: countLabel
     labelVisible: false
-    hasVisualContent: true
     fixedWidth: root.vertical ? -1 : labelRow.implicitWidth + scaledHorizontalMargin * 2
     fixedHeight: root.vertical ? labelColumn.implicitHeight + scaledVerticalPadding * 2 : -1
     tooltipText: root.status === "ready"
@@ -168,21 +167,13 @@ BarWidget {
       anchors.centerIn: parent
       spacing: Style.space(4)
       Item {
-        width: Style.space(16)
-        height: Style.space(16)
+        width: Style.space(18)
+        height: Style.space(18)
         Image {
-          id: horizontalIcon
           anchors.fill: parent
-          source: Qt.resolvedUrl("dlms-mark.svg")
-          sourceSize: Qt.size(width * 2, height * 2)
-          visible: false
-          layer.enabled: true
-        }
-        MultiEffect {
-          anchors.fill: horizontalIcon
-          source: horizontalIcon
-          colorization: 1
-          colorizationColor: button.foreground
+          source: Qt.resolvedUrl("dlms-icon.png")
+          fillMode: Image.PreserveAspectFit
+          smooth: true
         }
       }
       Text {
@@ -199,22 +190,14 @@ BarWidget {
       anchors.centerIn: parent
       spacing: Style.space(2)
       Item {
-        width: Style.space(16)
-        height: Style.space(16)
+        width: Style.space(18)
+        height: Style.space(18)
         anchors.horizontalCenter: parent.horizontalCenter
         Image {
-          id: verticalIcon
           anchors.fill: parent
-          source: Qt.resolvedUrl("dlms-mark.svg")
-          sourceSize: Qt.size(width * 2, height * 2)
-          visible: false
-          layer.enabled: true
-        }
-        MultiEffect {
-          anchors.fill: verticalIcon
-          source: verticalIcon
-          colorization: 1
-          colorizationColor: button.foreground
+          source: Qt.resolvedUrl("dlms-icon.png")
+          fillMode: Image.PreserveAspectFit
+          smooth: true
         }
       }
       Text {

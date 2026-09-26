@@ -21,6 +21,7 @@ Panel {
     settingsOpen = false;
     controller.show();
     if (hostWidget) hostWidget.refresh();
+    if (!hostWidget || !hostWidget.serverBase) showSettings();
   }
   function close() { controller.hide(); }
   function toggle() { opened ? close() : open(); }
